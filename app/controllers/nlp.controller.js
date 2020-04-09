@@ -1,116 +1,92 @@
-const Customer = require("../models/nlp.model.js");
+const fs = require('fs');
+const request = require('request');
+const progress = require('request-progress');
+const formatters = require("./helpers/formatters");
+const chunkTokenizer = require("./helpers/text.tokenizer");
+const textProcessor = require("./helpers/text.processor");
 
-// Create and Save a new Customer
-exports.create = (req, res) => {
+// Process and Pipe a new Data file
+exports.process = (req, res) => {
+  let hrstart = process.hrtime();
+
   // Validate request
-  if (!req.body) {
+  if (!req.body || !req.body.file) {
     res.status(400).send({
-      message: "Content can not be empty!"
+      message: "File value can not be empty!"
     });
   }
 
-  // Create a Customer
-  const customer = new Customer({
-    email: req.body.email,
-    name: req.body.name,
-    active: req.body.active
-  });
+  let fileName = formatters.getFilename(req.body.file);
+  let chunks = [];
+  let buffer = '';
+  // gather some stats info
+  let lastState = {};
+  let chunksCounter = 0;
 
-  // Save Customer in the database
-  Customer.create(customer, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Customer."
-      });
-    else res.send(data);
-  });
-};
-
-// Retrieve all Customers from the database.
-exports.findAll = (req, res) => {
-  Customer.getAll((err, data) => {
-    if (err)
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving customers."
-      });
-    else res.send(data);
-  });
-};
-
-// Find a single Customer with a customerId
-exports.findOne = (req, res) => {
-  Customer.findById(req.params.customerId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Customer with id ${req.params.customerId}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Error retrieving Customer with id " + req.params.customerId
-        });
+  // Get provided text file and pipe it to fs
+  progress(request(req.body.file), {})
+  .on('progress', (state) => {
+      lastState = state;
+  })
+  .on('error', (err) => {
+      res.status(500).send({message:err}); 
+  })
+  .on('data', (chunk) => {
+      chunksCounter++;
+      let str = chunk.toString();
+      // protect cutted end of chunk by cheking if the last char is whitespace
+      buffer = buffer + str;
+      let regex = /(\s+$)/g;
+      let matches = buffer.match(regex);
+      if (matches && matches.length > 0) {
+          // perform tokenization process
+          chunkTokenizer(buffer).then(
+            result=>{
+              chunks.push(result);
+              // clean the buffer
+              buffer = '';
+            }).catch(error => console.error(error));
       }
-    } else res.send(data);
-  });
-};
-
-// Update a Customer identified by the customerId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body) {
-    res.status(400).send({
-      message: "Content can not be empty!"
-    });
-  }
-
-  console.log(req.body);
-
-  Customer.updateById(
-    req.params.customerId,
-    new Customer(req.body),
-    (err, data) => {
-      if (err) {
-        if (err.kind === "not_found") {
-          res.status(404).send({
-            message: `Not found Customer with id ${req.params.customerId}.`
-          });
-        } else {
-          res.status(500).send({
-            message: "Error updating Customer with id " + req.params.customerId
-          });
+  })
+  .on('end', () => {
+      let mergedChunks = [].concat.apply([], chunks);
+      textProcessor(mergedChunks,fileName).then(
+        res.send({
+          processStatus:'Done',
+          fileName,
+          chunksProcessed: chunksCounter,
+          state: {
+            totalProcessingTime:`${process.hrtime(hrstart)[0]} sec`,
+            fileSize: `${formatters.humanFileSize(lastState.size.total)}`,
+            downloadSpeed: `${formatters.humanFileSize(lastState.speed)}/sec`
+          }
+        })
+      ).catch(
+        error => {
+          console.error(error);
+          res.status(500).send({message:error});
         }
-      } else res.send(data);
-    }
-  );
+      );
+  })
+  .pipe(fs.createWriteStream(__dirname+'/../../files/'+fileName));
+
 };
 
-// Delete a Customer with the specified customerId in the request
-exports.delete = (req, res) => {
-  Customer.remove(req.params.customerId, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Not found Customer with id ${req.params.customerId}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Could not delete Customer with id " + req.params.customerId
-        });
+// Retrieve all repetitions from the database.
+exports.find = (req, res) => {
+  let fileName = req.params.filename;
+  fs.readFile(__dirname+'/../../files/'+fileName+'.json', (err, data) => {
+      if (err) {
+          return res.status(500).send({message: err});
       }
-    } else res.send({ message: `Customer was deleted successfully!` });
-  });
-};
 
-// Delete all Customers from the database.
-exports.deleteAll = (req, res) => {
-  Customer.removeAll((err, data) => {
-    if (err)
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all customers."
-      });
-    else res.send({ message: `All Customers were deleted successfully!` });
+      let json={};
+      try {
+        json = JSON.parse(data);
+      } catch (e) {
+        return res.status(500).send({message: e});
+      }
+
+      res.json(json);
   });
 };
