@@ -1,10 +1,10 @@
 module.exports = app => {
-  const nlp = require("../controllers/nlp.controller.js");
+    const nlp = require("../controllers/nlp.controller.js");
 
-  // Create a new Customer
-  app.post("/process", nlp.process);
+    // Create a new Customer
+    app.post("/process", nlp.process);
 
-  // Retrieve all Customers
-  app.get("/words/:filename", nlp.find);
+    // Retrieve all Customers
+    app.get("/words/:filename", nlp.find);
 
 };
