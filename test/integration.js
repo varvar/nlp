@@ -42,14 +42,16 @@ describe('Integration / endToEnd tests', () => {
 
     it('should return tokenized json', (done) => {
 
-        chai.request(server)
-            .get(`/words/${fileName}`)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.an('Array').with.lengthOf.above(1);
+        setTimeout(() => {
+            chai.request(server)
+                .get(`/words/${fileName}`)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.an('Array').with.lengthOf.above(1);
 
-                done();
-            })
-    });
+                    done();
+                })
+        }, 4000)
+    }).timeout(5000);
 
 });

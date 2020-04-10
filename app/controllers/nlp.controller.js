@@ -33,11 +33,9 @@ exports.process = (req, res) => {
         })
         .on('data', (chunk) => {
             chunksCounter++;
-            let str = chunk.toString();
             // protect cutted end of chunk by checking if the last char is whitespace
-            buffer = buffer + str;
-            let regex = /(\s+$)/g;
-            let matches = buffer.match(regex);
+            buffer = buffer + chunk.toString();
+            let matches = buffer.match(/(\s+$)/g);
             if (matches && matches.length > 0) {
                 // perform tokenization process
                 chunkTokenizer(buffer).then(
@@ -63,7 +61,6 @@ exports.process = (req, res) => {
                 })
             ).catch(
                 error => {
-                    console.error(error);
                     return res.status(500).send({message: error});
                 }
             );
@@ -72,7 +69,7 @@ exports.process = (req, res) => {
 
 };
 
-// Retrieve all repetitions from the database.
+// Retrieve all repetitions from json file.
 exports.find = (req, res) => {
     let fileName = req.params.filename;
     fs.readFile(__dirname + '/../../files/' + fileName + '.json', (err, data) => {

@@ -24,6 +24,12 @@ describe('Unit tests', () => {
                 expect(R.includes('$5,000', result)).to.be.false;
                 expect(R.includes('!@#$', result)).to.be.false;
                 expect(R.includes('tm', result)).to.be.true;
+
+                //check duplicated values are present
+                let findDuplicates = arr => arr.filter((item, index) => arr.indexOf(item) != index);
+                let duplicates = findDuplicates(result);
+                expect(R.includes('donations', duplicates)).to.be.true;
+
                 tokenizedArray = result;
                 done();
             }).catch(error => console.error(error));
@@ -41,9 +47,14 @@ describe('Unit tests', () => {
 
                     let json = JSON.parse(data);
                     expect(json).to.be.a('Array').with.lengthOf.above(1);
+
+                    //examine "the" word existing and count
+                    let specificWord = R.find(R.propEq('word', 'the'))(json);
+                    expect(specificWord).to.be.a('object').that.has.all.keys('word', 'repetitions');
+                    expect(specificWord.repetitions).to.be.equal(3);
                     done();
                 })
-            }, 3000)
+            }, 4000)
         ).catch(error => console.error(error));
 
     }).timeout(5000);
