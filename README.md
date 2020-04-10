@@ -18,7 +18,7 @@ Once server started it will be accessible on http://localhost:3000/
 
 #### Perform tokenization process ####
 
-  Run tokenizer process for provided .txt file. Average processing time for 5MB file is about 10 sec and depends on download speed.
+  Run tokenizer process for provided .txt file. Average processing time for 5 MB file is about 10 sec and depends on download speed.
 
 * #### URL ####
 
@@ -34,7 +34,7 @@ Once server started it will be accessible on http://localhost:3000/
     {"file":"http://www.gutenberg.org/cache/epub/10/pg10.txt"}
 
   ```
-    Please note, that file property is required and not optional
+    Please note, that file property required and not optional
 
 * #### Success Response: #### 
   
@@ -65,7 +65,7 @@ Once server started it will be accessible on http://localhost:3000/
 
 * #### Notes: #### 
 
-  "fileName" property from response object is required for getting the words list in next API call, since it's identifier for retrieving relevant json data. The rest of properties are for information only.  
+  "fileName" property from response object required for getting the words list in next API call, since it's an identifier for retrieving relevant json data. The rest of properties is for information only.  
 
 
 #### Get words list and repetitions ####
@@ -127,6 +127,6 @@ Once server started it will be accessible on http://localhost:3000/
     ``` 
 ### Test engine
 
-Test engine is based on Mocha as testing framework and Chai as assertion manager. There are two types of tests added: unit tests and integration/end to end tests. For current implementation there are no differences between integration and end to end tests.
+Test engine based on Mocha as testing framework and Chai as assertion manager. There are two types of tests added: unit tests and integration/end to end tests. For current implementation there are no differences between integration and end to end tests.
 
 To run test cases just run "npm test" inside project folder.
