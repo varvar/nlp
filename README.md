@@ -1,6 +1,6 @@
 # Node.js Test Task
 
-## Project Setup
+### Project Setup
 ```
 git clone https://github.com/varvar/nlp.git
 cd to folder nlp
@@ -16,19 +16,19 @@ Once server started it will be accessible on http://localhost:3000/
 
 ### API Reference
 
-**Perform tokenizer process**
-----
-  Run tokenizer process for provided .txt file. Average processing time for 5MB file is about 10 sec.
+#### Perform tokenization process ####
 
-* **URL**
+  Run tokenizer process for provided .txt file. Average processing time for 5MB file is about 10 sec and depends on download speed.
+
+* #### URL ####
 
   http://localhost:3000/process
 
-* **Method:**
+* #### Method: #### 
   
   `POST`
   
-* **Data Params**
+* #### Data Params #### 
 
   ```
     {"file":"http://www.gutenberg.org/cache/epub/10/pg10.txt"}
@@ -36,7 +36,7 @@ Once server started it will be accessible on http://localhost:3000/
   ```
     Please note, that file property is required and not optional
 
-* **Success Response:**
+* #### Success Response: #### 
   
   * **Code:** 200 <br />
     **Content:** 
@@ -53,7 +53,7 @@ Once server started it will be accessible on http://localhost:3000/
     }
     ```
  
-* **Error Response:**
+* #### Error Response: #### 
 
   * **Code:** 500 SERVER ERROR <br />
     **Content:** `{ errorObj }`
@@ -63,6 +63,70 @@ Once server started it will be accessible on http://localhost:3000/
   * **Code:** 400 BAD REQUEST <br />
     **Content:** `{ "message": "File value can not be empty!" }`
 
-* **Notes:**
+* #### Notes: #### 
 
   "fileName" property from response object is required for getting the words list in next API call, since it's identifier for retrieving relevant json data. The rest of properties are for information only.  
+
+
+#### Get words list and repetitions ####
+
+  Returns json data for provided file name with words list and repetitions.
+
+* #### URL ####
+
+  http://localhost:3000/words/{fileName}
+
+  For example: http://localhost:3000/words/pgs10.txt
+
+* #### Method: #### 
+  
+  `GET`
+  
+* #### URL Params #### 
+
+  **Required:**
+ 
+   `fileName=[string]`
+
+* #### Success Response: #### 
+  
+  * **Code:** 200 <br />
+    **Content:** 
+    ```
+    [
+      {
+        "word": "project",
+        "repetitions": 5
+      },
+      {
+        "word": "gutenberg",
+        "repetitions": 4
+      },
+      {
+        "word": "ebook",
+        "repetitions": 8
+      },
+      ....
+    ]
+    ```
+ 
+* #### Error Response: #### 
+
+  * **Code:** 500 SERVER ERROR <br />
+    **Content:** 
+    ```
+    {
+      "message": {
+          "errno": -2,
+          "code": "ENOENT",
+          "syscall": "open",
+          "path": "/nlp/app/controllers/../../files/pgs10.txt.json"
+      }
+    }
+
+    ``` 
+### Test engine
+
+Test engine is based on Mocha as testing framework and Chai as assertion manager. There are two types of tests added: unit tests and integration/end to end tests. For current implementation there are no differences between integration and end to end tests.
+
+To run test cases just run "npm test" inside project folder.
