@@ -74,9 +74,9 @@ Once server started it will be accessible on http://localhost:3000/
 
 * #### URL ####
 
-  http://localhost:3000/words/{fileName}
+  http://localhost:3000/words/{fileName}/{sort}/{order}
 
-  For example: http://localhost:3000/words/pgs10.txt
+  For example: http://localhost:3000/words/pgs10.txt/repetitions/desc
 
 * #### Method: #### 
   
@@ -87,6 +87,11 @@ Once server started it will be accessible on http://localhost:3000/
   **Required:**
  
    `fileName=[string]`
+   
+   **Optional:**
+    
+      `sort=[repetitions/word]`
+      `order=[asc/desc]`
 
 * #### Success Response: #### 
   

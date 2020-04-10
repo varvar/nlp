@@ -5,6 +5,6 @@ module.exports = app => {
     app.post("/process", nlp.process);
 
     // Retrieve all Customers
-    app.get("/words/:filename", nlp.find);
+    app.get("/words/:filename/:sort?/:order?", nlp.find);
 
 };

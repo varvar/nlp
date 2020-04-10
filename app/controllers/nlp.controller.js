@@ -72,6 +72,9 @@ exports.process = (req, res) => {
 // Retrieve all repetitions from json file.
 exports.find = (req, res) => {
     let fileName = req.params.filename;
+    let sort = req.params.sort || '';
+    let order = req.params.order || '';
+
     fs.readFile(__dirname + '/../../files/' + fileName + '.json', (err, data) => {
         if (err) {
             return res.status(500).send({message: err});
@@ -83,7 +86,7 @@ exports.find = (req, res) => {
         } catch (e) {
             return res.status(500).send({message: e});
         }
-
-        res.json(json);
+        let sorted = json.sort(formatters.compareValues(sort,order));
+        res.json(sorted);
     });
 };
