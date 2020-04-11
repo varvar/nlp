@@ -1,3 +1,9 @@
+/**
+ * Process tokenizing on entire string.
+ *
+ * @param {string} str String with words
+ * @return {array} words list.
+ */
 const processText = async (str) => {
     const patternNewLine = /\n/g,
         patternNewRow = /\r/g,

@@ -5,7 +5,11 @@ const formatters = require("./helpers/formatters");
 const chunkTokenizer = require("./helpers/text.tokenizer");
 const textProcessor = require("./helpers/text.processor");
 
-// Process and Pipe a new Data file
+/**
+ * Process new text file tokenization
+ *
+ * @return {object} Processing status information.
+ */
 exports.process = (req, res) => {
     let hrstart = process.hrtime();
 
@@ -69,7 +73,14 @@ exports.process = (req, res) => {
 
 };
 
-// Retrieve all repetitions from json file.
+/**
+ * Retrieve all words repetitions from json file.
+ *
+ * @param {string} filename Filename to get words list information
+ * @param {string} sort Sorting parameter (word,repetitions)
+ * @param {string} order Order parameter (asc,desc)
+ * @return {object} json data.
+ */
 exports.find = (req, res) => {
     let fileName = req.params.filename;
     let sort = req.params.sort || '';
@@ -91,7 +102,12 @@ exports.find = (req, res) => {
     });
 };
 
-// Pipe words list to client
+/**
+ * Retrieve words list from json file in stream.
+ *
+ * @param {string} filename Filename to get words list information
+ * @return {object} json data.
+ */
 exports.get = (req, res) => {
     let fileName = req.params.filename;
 
