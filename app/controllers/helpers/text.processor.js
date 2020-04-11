@@ -1,7 +1,6 @@
 const fs = require('fs');
 const {promisify} = require('util');
-const writeFileAsync = promisify(fs.writeFile)
-const R = require('ramda');
+const writeFileAsync = promisify(fs.writeFile);
 
 const processWordsArray = async (array) => {
 
@@ -11,18 +10,24 @@ const processWordsArray = async (array) => {
     });
 
     let wordsAr = [];
-    const beautifyOutput = (value, key) => {
-        wordsAr[wordsAr.length] = {
-            "word": key,
-            "repetitions": value
-        };
+    let beautify = async (obj) => {
+        wordsAr[wordsAr.length] = obj;
     };
-    R.forEachObjIndexed(beautifyOutput, counts);
-
+    for ( let key in counts) {
+        if (counts.hasOwnProperty(key)) {
+            await beautify({
+                "word": key,
+                "repetitions": counts[key]
+            });
+        }
+    }
     return wordsAr;
 };
 
 const generateDataFile = async (array, fileName) => {
+    if(array.length === 0){
+        console.log('text.processor.js line 27: ', array);
+    }
     let json = JSON.stringify(array);
     await writeFileAsync(__dirname + '/../../../files/' + fileName + '.json', json);
     return true;
