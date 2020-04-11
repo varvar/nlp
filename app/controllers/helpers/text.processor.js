@@ -25,9 +25,6 @@ const processWordsArray = async (array) => {
 };
 
 const generateDataFile = async (array, fileName) => {
-    if(array.length === 0){
-        console.log('text.processor.js line 27: ', array);
-    }
     let json = JSON.stringify(array);
     await writeFileAsync(__dirname + '/../../../files/' + fileName + '.json', json);
     return true;
