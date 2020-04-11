@@ -90,3 +90,18 @@ exports.find = (req, res) => {
         res.json(sorted);
     });
 };
+
+// Pipe words list to client
+exports.get = (req, res) => {
+    let fileName = req.params.filename;
+
+    res.setHeader('Content-Type', 'application/json');
+    
+    let readStream = fs.createReadStream(__dirname + '/../../files/' + fileName + '.json');
+    readStream.on('data', (data) => {
+        res.write(data);
+    });
+    readStream.on('end', () => {
+        res.status(200).send();
+    });
+};
