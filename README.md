@@ -189,8 +189,6 @@ Once server started it will be accessible on http://localhost:3000/
 
     ``` 
         
-### Test engine
+### Tests
 
-Test engine based on Mocha as testing framework and Chai as assertion manager. There are two types of tests added: unit tests and integration/end to end tests. For current implementation there are no differences between integration and end to end tests.
-
-To run test cases just run "npm test" inside project folder.
+run "npm test" inside project folder.
